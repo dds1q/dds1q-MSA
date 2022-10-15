@@ -1,0 +1,14 @@
+# 유레카 서버 포트 설정
+server:
+  port: 8761
+
+# 마이크로서비스의 고유한 ID 부여
+spring:
+  application:
+    name: discoveryservice
+
+# 자기자신을 service discovery에 등록할 수 없으므로 false로 설정
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
