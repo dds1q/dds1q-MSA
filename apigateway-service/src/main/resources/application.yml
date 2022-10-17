@@ -14,6 +14,12 @@ spring:
     name: apigateway-service
   cloud:
     gateway:
+      default-filters:  # 글로벌필터 적용
+        - name: GlobalFilter
+          args: # 글로벌필터 config 설정
+            baseMessage: Spring Cloud Gateway GlobalFilter
+            preLogger: true
+            postLogger: true
       routes:
         - id: first-service
           uri: http://localhost:8081/ # 어디로 포워딩될 것인지 주소 설정
@@ -30,7 +36,14 @@ spring:
           filters:
             - AddRequestHeader=second-request, second-request-header2
             - AddResponseHeader=second-response, second-response-header2
-            - CustomFilter # 커스텀 필터
+            - name: CustomFilter # 커스텀 필터
+            - name: LoggingFilter # 특정 필터에 로깅필터 추가
+              args:
+                baseMessage: Hi, there.
+                preLogger: true
+                postLogger: true
 
-# ex ) http://localhost:8000/first-service/welcome 을 요청하면
+
+
+  # ex ) http://localhost:8000/first-service/welcome 을 요청하면
   # http://localhost:8081/first-service/welcome 로 요청됨
