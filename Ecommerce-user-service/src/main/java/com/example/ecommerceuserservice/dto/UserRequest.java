@@ -1,4 +1,4 @@
-package com.example.ecommerceuserservice.vo;
+package com.example.ecommerceuserservice.dto;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
