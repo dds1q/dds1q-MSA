@@ -45,6 +45,7 @@ spring:
           filters:
             - RemoveRequestHeader=Cookie  # 요청 헤더 삭제
             - RewritePath=/user-service/(?<segment>.*), /$\{segment}  #"user-service"없애고 포워딩
+            - AuthorizationHeaderFilter
         - id: catalog-service
           uri: lb://CATALOG-SERVICE
           predicates:

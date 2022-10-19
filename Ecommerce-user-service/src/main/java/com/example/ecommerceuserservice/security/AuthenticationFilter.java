@@ -56,11 +56,10 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         }
     }
 
-    @Override
+    @Override   // 로그인 성공시 handler
     protected void successfulAuthentication(HttpServletRequest request,
         HttpServletResponse response, FilterChain chain, Authentication authResult)
-        throws IOException, ServletException {
-        super.successfulAuthentication(request, response, chain, authResult);
+        {
 
         String userId =  ((UserDetailsImpl)authResult.getPrincipal()).getUser().getUserId();
 
