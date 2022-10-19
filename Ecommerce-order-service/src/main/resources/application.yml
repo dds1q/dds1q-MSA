@@ -1,0 +1,19 @@
+server:
+  port: 0 # 랜덤포트로 실행
+
+spring:
+  application:
+    name: order-service
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+  instance:
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+
+logging:
+  level:
+    com.example.ecommerceorderservice: DEBUG
