@@ -13,20 +13,25 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class WebSecurity extends WebSecurityConfigurerAdapter {
 
-    private final UserService userService;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final Environment env;
+    private UserService userService;
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private Environment env;
+
+    public WebSecurity(UserService userService, BCryptPasswordEncoder bCryptPasswordEncoder,
+        Environment env) {
+        this.userService = userService;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.env = env;
+    }
 
     @Override       // 권한에 관련된 config
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();  //csrf 사용x
 //        http.authorizeRequests()
 //            .antMatchers("/users/**").permitAll();  // 로그인, 회원가입은 비인증 허용
-        http.authorizeRequests().antMatchers("/**")
-                .hasIpAddress("192.168.45.169") // 통과시키고 싶은 IP
+        http.authorizeRequests().antMatchers("/**").permitAll()
                 .and()
                 .addFilter( getAuthenticationFilter() );
 
@@ -34,9 +39,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     }
 
     private AuthenticationFilter getAuthenticationFilter() throws Exception {
-        AuthenticationFilter authenticationFilter = new AuthenticationFilter();
-        authenticationFilter.setAuthenticationManager( authenticationManager());
-
+        AuthenticationFilter authenticationFilter = new AuthenticationFilter( authenticationManager(), userService, env );
+//        authenticationFilter.setAuthenticationManager( authenticationManager());
         return authenticationFilter;
     }
 
