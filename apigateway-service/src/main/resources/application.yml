@@ -24,7 +24,27 @@ spring:
         - id: user-service
           uri: lb://USER-SERVICE
           predicates:
+            - Path=/user-service/login
+            - Method=POST
+          filters:
+            - RemoveRequestHeader=Cookie  # 요청 헤더 삭제
+            - RewritePath=/user-service/(?<segment>.*), /$\{segment}  #"user-service"없애고 포워딩
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/user-service/users
+            - Method=POST
+          filters:
+            - RemoveRequestHeader=Cookie  # 요청 헤더 삭제
+            - RewritePath=/user-service/(?<segment>.*), /$\{segment}  #"user-service"없애고 포워딩
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
             - Path=/user-service/**
+            - Method=GET
+          filters:
+            - RemoveRequestHeader=Cookie  # 요청 헤더 삭제
+            - RewritePath=/user-service/(?<segment>.*), /$\{segment}  #"user-service"없애고 포워딩
         - id: catalog-service
           uri: lb://CATALOG-SERVICE
           predicates:
