@@ -35,17 +35,25 @@ spring:
             - Path=/user-service/users
             - Method=POST
           filters:
-            - RemoveRequestHeader=Cookie  # 요청 헤더 삭제
-            - RewritePath=/user-service/(?<segment>.*), /$\{segment}  #"user-service"없애고 포워딩
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
         - id: user-service
           uri: lb://USER-SERVICE
           predicates:
             - Path=/user-service/**
             - Method=GET
           filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
+            - AuthorizationHeaderFilter
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/user-service/actuator/**
+            - Method=POST,GET
+          filters:
             - RemoveRequestHeader=Cookie  # 요청 헤더 삭제
             - RewritePath=/user-service/(?<segment>.*), /$\{segment}  #"user-service"없애고 포워딩
-            - AuthorizationHeaderFilter
         - id: catalog-service
           uri: lb://CATALOG-SERVICE
           predicates:
@@ -54,28 +62,33 @@ spring:
           uri: lb://ORDER-SERVICE
           predicates:
             - Path=/order-service/**
-#        - id: first-service
-#          uri: lb://MY-FIRST-SERVICE # discoveryservice에서 name을 찾아서 포워딩
-#          predicates: # 조건절
-#            - Path=/first-service/**  # 사용자가 입력한 path정보가 조건과 같으면 설정한 uri로 포워딩
-#          filters:  # filter
-#            - AddRequestHeader=first-request, first-request-header2
-#            - AddResponseHeader=first-response, first-response-header2
-#            - CustomFilter   # 커스텀필터
-#        - id: second-service
-#          uri: lb://MY-SECOND-SERVICE
-#          predicates:
-#            - Path=/second-service/**
-#          filters:
-#            - AddRequestHeader=second-request, second-request-header2
-#            - AddResponseHeader=second-response, second-response-header2
-#            - name: CustomFilter # 커스텀 필터
-#            - name: LoggingFilter # 특정 필터에 로깅필터 추가
-#              args:
-#                baseMessage: Hi, there.
-#                preLogger: true
-#                postLogger: true
+        - id: first-service
+          uri: lb://MY-FIRST-SERVICE # discoveryservice에서 name을 찾아서 포워딩
+          predicates: # 조건절
+            - Path=/first-service/**  # 사용자가 입력한 path정보가 조건과 같으면 설정한 uri로 포워딩
+          filters:  # filter
+            - AddRequestHeader=first-request, first-request-header2
+            - AddResponseHeader=first-response, first-response-header2
+            - CustomFilter   # 커스텀필터
+        - id: second-service
+          uri: lb://MY-SECOND-SERVICE
+          predicates:
+            - Path=/second-service/**
+          filters:
+            - AddRequestHeader=second-request, second-request-header2
+            - AddResponseHeader=second-response, second-response-header2
+            - name: CustomFilter # 커스텀 필터
+            - name: LoggingFilter # 특정 필터에 로깅필터 추가
+              args:
+                baseMessage: Hi, there.
+                preLogger: true
+                postLogger: true
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh, health, beans, httptrace
 
 
   # ex ) http://localhost:8000/first-service/welcome 을 요청하면

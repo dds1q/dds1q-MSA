@@ -30,7 +30,9 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();  //csrf 사용x
         http.authorizeRequests()
-            .antMatchers("/users/**").permitAll();  // 회원가입은 비인증 허용
+            .antMatchers("/users/**").permitAll();
+        http.authorizeRequests()
+            .antMatchers("/actuator/**").permitAll();  // 회원가입은 비인증 허용
         http.authorizeRequests().antMatchers("/login").permitAll()
                 .and()
                 .addFilter( getAuthenticationFilter() );

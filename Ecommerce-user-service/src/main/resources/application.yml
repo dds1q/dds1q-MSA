@@ -21,4 +21,10 @@ logging:
   level:
     com.example.ecommerceuserservice: DEBUG
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh, health, beans
+
 
