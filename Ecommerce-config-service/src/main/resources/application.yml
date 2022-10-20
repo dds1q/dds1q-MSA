@@ -8,6 +8,6 @@ spring:
     config:
       server:
         git:
-          uri: file://C:/sparta/study/dds1q-MSA-config
+          uri: https://github.com/dds1q/dds1q-MSA/tree/main/dds1q-MSA-config
 
 # /ecommerce/default
