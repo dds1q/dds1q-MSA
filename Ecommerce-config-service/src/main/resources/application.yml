@@ -3,11 +3,21 @@ server:
 
 spring:
   application:
-    name: config-server
+    name: config-service
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
   cloud:
     config:
       server:
         git:
-          uri: https://github.com/dds1q/dds1q-MSA/tree/main/dds1q-MSA-config
-
+          uri: https://github.com/dds1q/sping-cloud-config.git
 # /ecommerce/default
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, busrefresh

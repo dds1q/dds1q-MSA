@@ -9,9 +9,20 @@ eureka:
     service-url:
       defaultZone: http://localhost:8761/eureka
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh, health, beans, httptrace, busrefresh
+
 spring:
   application:
     name: apigateway-service
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
   cloud:
     gateway:
       default-filters:  # 글로벌필터 적용
@@ -62,33 +73,29 @@ spring:
           uri: lb://ORDER-SERVICE
           predicates:
             - Path=/order-service/**
-        - id: first-service
-          uri: lb://MY-FIRST-SERVICE # discoveryservice에서 name을 찾아서 포워딩
-          predicates: # 조건절
-            - Path=/first-service/**  # 사용자가 입력한 path정보가 조건과 같으면 설정한 uri로 포워딩
-          filters:  # filter
-            - AddRequestHeader=first-request, first-request-header2
-            - AddResponseHeader=first-response, first-response-header2
-            - CustomFilter   # 커스텀필터
-        - id: second-service
-          uri: lb://MY-SECOND-SERVICE
-          predicates:
-            - Path=/second-service/**
-          filters:
-            - AddRequestHeader=second-request, second-request-header2
-            - AddResponseHeader=second-response, second-response-header2
-            - name: CustomFilter # 커스텀 필터
-            - name: LoggingFilter # 특정 필터에 로깅필터 추가
-              args:
-                baseMessage: Hi, there.
-                preLogger: true
-                postLogger: true
+#        - id: first-service
+#          uri: lb://MY-FIRST-SERVICE # discoveryservice에서 name을 찾아서 포워딩
+#          predicates: # 조건절
+#            - Path=/first-service/**  # 사용자가 입력한 path정보가 조건과 같으면 설정한 uri로 포워딩
+#          filters:  # filter
+#            - AddRequestHeader=first-request, first-request-header2
+#            - AddResponseHeader=first-response, first-response-header2
+#            - CustomFilter   # 커스텀필터
+#        - id: second-service
+#          uri: lb://MY-SECOND-SERVICE
+#          predicates:
+#            - Path=/second-service/**
+#          filters:
+#            - AddRequestHeader=second-request, second-request-header2
+#            - AddResponseHeader=second-response, second-response-header2
+#            - name: CustomFilter # 커스텀 필터
+#            - name: LoggingFilter # 특정 필터에 로깅필터 추가
+#              args:
+#                baseMessage: Hi, there.
+#                preLogger: true
+#                postLogger: true
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: refresh, health, beans, httptrace
+
 
 
   # ex ) http://localhost:8000/first-service/welcome 을 요청하면
