@@ -13,7 +13,8 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/dds1q/sping-cloud-config.git
+#          uri: https://github.com/dds1q/sping-cloud-config.git
+          uri: file://C:\sparta\study\native-file-repo
 # /ecommerce/default
 
 management:
