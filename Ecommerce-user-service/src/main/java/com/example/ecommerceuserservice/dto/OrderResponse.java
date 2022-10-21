@@ -1,8 +1,12 @@
 package com.example.ecommerceuserservice.dto;
 
-import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import java.time.LocalDateTime;
+import lombok.Data;
 
-public class OrderResponse {
+@Data
+@JsonInclude( JsonInclude.Include.NON_NULL )
+public class OrderResponse{
 
     private String orderId;
 
@@ -10,6 +14,6 @@ public class OrderResponse {
     private Integer qty;    // quantity 수량
     private Integer unitPrice;  // 단가
     private Integer totalPrice; // 총가격
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
 }
