@@ -4,6 +4,7 @@ import com.example.ecommerceorderservice.domain.Order;
 import com.example.ecommerceorderservice.dto.OrderDto;
 import com.example.ecommerceorderservice.dto.OrderRequest;
 import com.example.ecommerceorderservice.dto.OrderResponse;
+import com.example.ecommerceorderservice.messagequeue.KafkaProducer;
 import com.example.ecommerceorderservice.service.OrderService;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,8 @@ public class OrderController {
     private final OrderService orderService;
     private final Environment env;
 
+    private final KafkaProducer kafkaProducer;  // 메시지 전송
+
     @GetMapping("/health_check")    // 상태체크, 포트확인
     public String status(){
         return String.format( "It's Working in Order Service on PORT %s", env.getProperty("local.server.port") );
@@ -38,14 +41,18 @@ public class OrderController {
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
+       /* JPA */
         OrderDto orderDto = mapper.map( request , OrderDto.class );
-
         OrderResponse orderResponse = mapper.map( orderService.createOrder( orderDto ) , OrderResponse.class );
+
+        /* send new order to the kafka*/
+        // topic 명은 카탈로그서비스의 kafkaListener에 설정한 topics 의 이름과 일치해야한다.
+        kafkaProducer.send("example-catalog-topic" , orderDto );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(orderResponse);
     }
 
-    @GetMapping("/{userId}/orders")
+    @GetMapping("/{userId}/orders") // 회원의 주문정보들 조회하기
     public ResponseEntity<List<OrderResponse>> getOrdersByUserId( @PathVariable String userId ){
 
         Iterable<Order> orders = orderService.getOrdersByUserId( userId );
@@ -57,7 +64,7 @@ public class OrderController {
         return ResponseEntity.status( HttpStatus.OK ).body( result );
     }
 
-    @GetMapping("/orders/{orderId}")
+    @GetMapping("/orders/{orderId}")    // 주문번호로 주문 조회
     public ResponseEntity<OrderResponse> getOrderByOrderId( @PathVariable String orderId ){
 
         OrderDto orderDto = orderService.getOrderByOrderId( orderId);
