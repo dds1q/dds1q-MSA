@@ -8,6 +8,7 @@ import com.example.ecommerceorderservice.messagequeue.KafkaProducer;
 import com.example.ecommerceorderservice.service.OrderService;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -40,14 +41,20 @@ public class OrderController {
     public ResponseEntity<OrderResponse> createOrder(@RequestBody OrderRequest request ){
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-
-       /* JPA */
         OrderDto orderDto = mapper.map( request , OrderDto.class );
-        OrderResponse orderResponse = mapper.map( orderService.createOrder( orderDto ) , OrderResponse.class );
+       /* JPA */
+
+//        OrderResponse orderResponse = mapper.map( orderService.createOrder( orderDto ) , OrderResponse.class );
+
+        /* kafka */
+        orderDto.setOrderId( UUID.randomUUID().toString() );
+        orderDto.setTotalPrice( request.getQty() * request.getUnitPrice() );
 
         /* send new order to the kafka*/
         // topic 명은 카탈로그서비스의 kafkaListener에 설정한 topics 의 이름과 일치해야한다.
         kafkaProducer.send("example-catalog-topic" , orderDto );
+
+        OrderResponse orderResponse = mapper.map( orderDto , OrderResponse.class );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(orderResponse);
     }
